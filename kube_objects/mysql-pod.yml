@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wp-mysql
+  labels:
+    app: wp-db
+spec:
+  containers:
+  - name: wp-mysql-container
+    image: mysql:8.0.32
+    ports:
+    - containerPort: 3306
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "Devops@123"
+    - name: MYSQL_DATABASE
+      value: "wordpressdb"
+    - name: MYSQL_USER
+      value: "wordpressuser"
+    - name: MYSQL_PASSWORD
+      value: "Wordpress@123"
+    args: ["--default-authentication-plugin=mysql_native_password"]
