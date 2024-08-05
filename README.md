@@ -1,47 +1,87 @@
-# WordPress Web Application Deployment Using Docker
+# WordPress Project - Docker and Kubernetes Setup
 
-## Project Overview
-This project demonstrates my expertise in deploying and managing WordPress web applications using Docker. The deployment process ensures scalability and efficiency through containerization, Docker Compose, and Kubernetes orchestration.
+This project demonstrates how to deploy a WordPress application using Docker and Kubernetes. It includes configurations for Docker containers and Kubernetes resources to manage WordPress and its MySQL database.
 
-## Key Responsibilities
+## Prerequisites
 
-### 1. Containerization
-- **Used Docker to containerize WordPress and its dependencies**, ensuring consistent and reproducible deployments.
-- Created Dockerfiles for custom configurations and extended functionality.
+- Docker installed on your machine
+- Kubernetes cluster (e.g., Minikube, Docker Desktop, or a cloud provider)
+- `kubectl` command-line tool installed
+- `docker-compose` installed
 
-### 2. Docker Compose
-- **Implemented Docker Compose to manage multi-container applications**, including WordPress, MySQL, and Nginx.
-- Developed `docker-compose.yml` files to define and run multi-container Docker applications.
+## Getting Started with Docker
 
-### 3. Scalability
-- **Configured and optimized containers for scalability**, handling increased traffic and resource management.
-- Ensured high availability and load balancing using Docker Swarm or Kubernetes.
+### Building the Docker Image
 
-### 4. Orchestration Using Kubernetes
-- **Implemented Kubernetes for container orchestration**, managing WordPress deployments in a Kubernetes cluster.
-- Configured Kubernetes pods, services, and deployments for efficient resource management and scalability.
+1. **Dockerfile**: The project includes a `Dockerfile` that defines the environment for the WordPress application.
 
-## Project Structure
+    ```bash
+    docker build -t my-wordpress .
+    ```
 
-- `Dockerfile`: Configuration file to containerize WordPress.
-- `docker-compose.yml`: Docker Compose file to manage multi-container setup.
-- `k8s/`: Directory containing Kubernetes deployment files.
-- `docs/`: Documentation for setting up and using the Docker and Kubernetes environments.
+2. **Environment Configuration**: The `wp-config.php` file includes the necessary configuration to connect WordPress to the MySQL database.
 
-## Example Dockerfile
+3. **Running Containers**: Use the `docker-compose.yml` file to manage and run the WordPress and MySQL containers.
 
-```Dockerfile
-# Use the official WordPress image
-FROM wordpress:latest
+    ```bash
+    docker-compose up -d
+    ```
 
-# Set environment variables for WordPress
-ENV WORDPRESS_DB_HOST=db
-ENV WORDPRESS_DB_USER=user
-ENV WORDPRESS_DB_PASSWORD=password
-ENV WORDPRESS_DB_NAME=wordpress
+    This will start both the WordPress and MySQL containers in detached mode.
 
-# Copy custom configuration files if needed
-COPY custom-config.php /usr/src/wordpress/wp-config.php
+4. **Accessing WordPress**: Once the containers are up and running, you can access your WordPress site by navigating to `http://localhost:8000` in your web browser.
 
-# Expose port 80
-EXPOSE 80
+5. **Stopping Containers**: To stop and remove the containers, use the following command:
+
+    ```bash
+    docker-compose down
+    ```
+
+## Kubernetes Deployment
+
+### MySQL Deployment
+
+1. **Deploy MySQL Pod**: The `mysql-pod.yml` file defines the MySQL pod. Deploy it using the following command:
+
+    ```bash
+    kubectl apply -f mysql-pod.yml
+    ```
+
+2. **Deploy MySQL Service**: The `mysql-pod-svc.yml` file defines a service to expose the MySQL pod. Deploy it using:
+
+    ```bash
+    kubectl apply -f mysql-pod-svc.yml
+    ```
+
+### WordPress Deployment
+
+1. **Deploy WordPress Pod**: The `wp-pod.yml` file defines the WordPress pod. Deploy it using the following command:
+
+    ```bash
+    kubectl apply -f wp-pod.yml
+    ```
+
+2. **Deploy WordPress Service**: The `wp-pod-svc.yml` file defines a service to expose the WordPress pod. Deploy it using:
+
+    ```bash
+    kubectl apply -f wp-pod-svc.yml
+    ```
+
+3. **Accessing WordPress**: After deploying both pods and services, you can access your WordPress site by forwarding the WordPress service to your local machine.
+
+    ```bash
+    kubectl port-forward service/wp-service 8080:80
+    ```
+
+    Then, navigate to `http://localhost:8080` to view your WordPress site.
+
+### Cleanup
+
+To remove the deployed resources from your Kubernetes cluster, use the following commands:
+
+```bash
+kubectl delete -f wp-pod-svc.yml
+kubectl delete -f wp-pod.yml
+kubectl delete -f mysql-pod-svc.yml
+kubectl delete -f mysql-pod.yml
+
